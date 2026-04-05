@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#8BAF8E">
+<meta name="description" content="Cartes de communication pour personnes neurodivergentes – TSA / HPI / TDAH">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mes Cartes">
+<title>Cartes de Communication · Neurodivergent</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap');
+
+  :root {
+    --sage:        #8BAF8E;
+    --sage-light:  #D4E5D5;
+    --sage-dark:   #5A7E5D;
+    --beige:       #E8DDD0;
+    --beige-dark:  #A0826D;
+    --blue:        #C5D8E8;
+    --blue-dark:   #5B8FA8;
+    --gold:        #C9A96E;
+    --gold-dark:   #A07840;
+    --lavender:    #D5CBE8;
+    --lavender-dark:#8B6DAE;
+    --bg:          #F7F4EF;
+    --white:       #FFFFFF;
+    --text:        #2C2C2C;
+    --text-mid:    #5A5A5A;
+    --text-light:  #9A9A9A;
+    --shadow:      rgba(0,0,0,0.08);
+    --radius:      20px;
+    --radius-sm:   12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* ─── APP SHELL ─────────────────────────────────────── */
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ─── SCREENS ───────────────────────────────────────── */
+  .screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.35s ease;
+    background: var(--bg);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .screen.hidden {
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .screen.exit-left {
+    transform: translateX(-30%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ─── ONBOARDING OVERLAY ────────────────────────────── */
+  #onboarding {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 28px;
+    background: linear-gradient(160deg, #D4E5D5 0%, #F7F4EF 50%, #D5CBE8 100%);
+    text-align: center;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  #onboarding.fade-out {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+  }
+  #onboarding.hidden { display: none; }
+
+  .onboarding-logo {
+    width: 72px; height: 72px;
+    background: white;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 34px;
+    box-shadow: 0 8px 32px rgba(139,175,142,0.3);
+    margin-bottom: 24px;
+    animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .onboarding-brand {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 6px;
+    animation: fadeUp 0.5s ease 0.15s both;
+  }
+  .onboarding-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 16px;
+    animation: fadeUp 0.5s ease 0.25s both;
+  }
+  .onboarding-desc {
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.7;
+    max-width: 300px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.5s ease 0.35s both;
+  }
+  .onboarding-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.5s ease 0.45s both;
+  }
+  .ob-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.7);
+    padding: 14px 16px;
+    border-radius: 16px;
+    text-align: left;
+  }
+  .ob-step-icon { font-size: 22px; flex-shrink: 0; }
+  .ob-step-text { font-size: 13px; color: var(--text-mid); line-height: 1.4; }
+  .ob-step-text strong { color: var(--text); display: block; font-size: 14px; margin-bottom: 2px; }
+
+  .btn-start {
+    background: var(--sage);
+    color: white;
+    border: none;
+    padding: 18px 48px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(90,126,93,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+    animation: fadeUp 0.5s ease 0.55s both;
+  }
+  .btn-start:active { transform: scale(0.96); box-shadow: 0 4px 12px rgba(90,126,93,0.25); }
+
+  @keyframes fadeUp {
+    from { transform: translateY(16px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  /* ─── HEADER ────────────────────────────────────────── */
+  .header {
+    padding: 52px 24px 20px;
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .logo-dot {
+    width: 32px; height: 32px;
+    background: var(--sage);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .header p {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  /* ─── SCREEN 1 : SITUATION ──────────────────────────── */
+  .situation-grid {
+    padding: 8px 20px 160px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .situation-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 0 8px;
+  }
+
+  .situation-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 12px var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+  .situation-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0);
+    transition: background 0.15s ease;
+  }
+  .situation-btn:active { transform: scale(0.97); }
+  .situation-btn:active::before { background: rgba(255,255,255,0.2); }
+
+  .sit-icon {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .sit-info { flex: 1; }
+  .sit-title {
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+  .sit-desc {
+    font-size: 12px;
+    opacity: 0.7;
+    line-height: 1.4;
+  }
+  .sit-arrow {
+    font-size: 18px;
+    opacity: 0.5;
+  }
+
+  /* ─── SCREEN 2 : CARDS LIST ─────────────────────────── */
+  .back-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 52px 20px 16px;
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .back-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    box-shadow: 0 2px 8px var(--shadow);
+    transition: transform 0.15s;
+  }
+  .back-btn:active { transform: scale(0.9); }
+
+  .back-bar h2 {
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .back-bar .badge {
+    margin-left: auto;
+    font-size: 12px;
+    background: var(--beige);
+    padding: 4px 10px;
+    border-radius: 20px;
+    color: var(--text-mid);
+    font-weight: 700;
+  }
+
+  .cards-list {
+    padding: 8px 20px 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .mini-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: 0 2px 12px var(--shadow);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+    border-left: 5px solid transparent;
+  }
+  .mini-card:active { transform: scale(0.98); box-shadow: 0 1px 6px var(--shadow); }
+
+  .mini-card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .mini-emoji { font-size: 22px; }
+  .mini-title {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.3;
+    flex: 1;
+  }
+  .mini-fav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+  }
+  .mini-fav-btn:active { transform: scale(1.3); }
+
+  .mini-body {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+  .mini-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .action-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    transition: transform 0.12s, opacity 0.12s;
+  }
+  .action-chip:active { transform: scale(0.95); opacity: 0.8; }
+  .chip-show { background: var(--sage-light); color: var(--sage-dark); }
+  .chip-copy { background: var(--beige); color: var(--beige-dark); }
+  .chip-share { background: var(--blue); color: var(--blue-dark); }
+
+  /* ─── SCREEN 3 : FULL CARD ───────────────────────────── */
+  #screen-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .full-back-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 40px;
+    flex-shrink: 0;
+  }
+  .card-counter {
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-light);
+    background: white;
+    padding: 5px 14px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .card-fav-btn {
+    background: white;
+    border: none;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 2px 8px var(--shadow);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .card-fav-btn:active { transform: scale(1.3); }
+
+  .card-display {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-face {
+    width: 100%;
+    max-width: 360px;
+    border-radius: 24px;
+    padding: 0;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
+    animation: cardIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes cardIn {
+    from { transform: scale(0.85) translateY(20px); opacity: 0; }
+    to   { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  .card-top-bar { height: 8px; }
+  .card-inner {
+    background: white;
+    padding: 28px 28px 24px;
+  }
+  .card-cat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .card-emoji-big {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+    animation: emojiPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  }
+  @keyframes emojiPop {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+  }
+  .card-title-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.25;
+    margin-bottom: 16px;
+  }
+  .card-divider {
+    height: 2px;
+    border-radius: 2px;
+    margin-bottom: 18px;
+    opacity: 0.3;
+  }
+  .card-body-big {
+    font-size: 16px;
+    color: var(--text-mid);
+    line-height: 1.75;
+    font-style: italic;
+  }
+
+  .card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .card-action-btn {
+    padding: 15px 10px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .card-action-btn:active { transform: scale(0.96); }
+
+  .btn-copy-full {
+    background: var(--sage-light);
+    color: var(--sage-dark);
+    grid-column: 1 / -1;
+    font-size: 15px;
+    padding: 18px;
+  }
+  .btn-share-full {
+    background: var(--blue);
+    color: var(--blue-dark);
+    grid-column: 1 / -1;
+    font-size: 14px;
+    padding: 14px;
+  }
+  .btn-prev, .btn-next {
+    background: white;
+    color: var(--text-mid);
+  }
+
+  /* ─── TOAST ──────────────────────────────────────────── */
+  #toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: white;
+    padding: 12px 22px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+  }
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ─── BOTTOM NAV ─────────────────────────────────────── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: rgba(247,244,239,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    z-index: 50;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .nav-item:active { transform: scale(0.9); }
+  .nav-icon { font-size: 22px; }
+  .nav-label { font-size: 10px; font-weight: 700; color: var(--text-light); }
+  .nav-item.active .nav-label { color: var(--sage-dark); }
+
+  /* ─── FAVORITES SCREEN ───────────────────────────────── */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px;
+    text-align: center;
+  }
+  .empty-icon { font-size: 48px; }
+  .empty-title { font-size: 18px; font-weight: 800; color: var(--text-mid); }
+  .empty-desc { font-size: 14px; color: var(--text-light); line-height: 1.5; }
+
+  /* ─── FOOTER ─────────────────────────────────────────── */
+  .lw-footer {
+    background: rgba(255,255,255,0.6);
+    border-top: 1px solid rgba(0,0,0,0.06);
+    padding: 24px 20px 32px;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  .lw-footer-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    text-align: center;
+  }
+  .lw-footer-brand h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--sage-dark);
+    margin-bottom: 4px;
+  }
+  .lw-footer-brand p {
+    font-size: 12px;
+    color: var(--text-light);
+    line-height: 1.5;
+    max-width: 240px;
+  }
+  .lw-footer-links {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .lw-footer-links a {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-mid);
+    text-decoration: none;
+    background: var(--beige);
+    padding: 7px 14px;
+    border-radius: 20px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .lw-footer-links a:hover { background: var(--sage-light); color: var(--sage-dark); }
+  .lw-footer-legal p {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-bottom: 4px;
+  }
+  .lw-footer-signature {
+    font-size: 12px !important;
+    color: var(--text-light) !important;
+  }
+  .btn-replay {
+    margin-top: 10px;
+    background: var(--lavender);
+    color: var(--lavender-dark);
+    border: none;
+    padding: 9px 18px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 2px 8px rgba(139,109,174,0.2);
+  }
+  .btn-replay:active { transform: scale(0.95); }
+
+  /* ─── SCROLLBAR ──────────────────────────────────────── */
+  .screen::-webkit-scrollbar { width: 4px; }
+  .screen::-webkit-scrollbar-track { background: transparent; }
+  .screen::-webkit-scrollbar-thumb { background: var(--beige); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ═══ ONBOARDING ══════════════════════════════════════ -->
+<div id="onboarding">
+  <div class="onboarding-logo">💛</div>
+  <div class="onboarding-brand">laboWeb · Outil de communication</div>
+  <div class="onboarding-title">Mes Cartes<br>de Communication</div>
+  <div class="onboarding-desc">
+    Des cartes pensées pour les personnes neurodivergentes — TSA, HPI, TDAH — pour mieux s'exprimer dans toutes les situations.
+  </div>
+  <div class="onboarding-steps">
+    <div class="ob-step">
+      <span class="ob-step-icon">🎯</span>
+      <div class="ob-step-text">
+        <strong>Choisis ta situation</strong>
+        Comment te sens-tu ? Qu'est-ce qui se passe ?
+      </div>
+    </div>
+    <div class="ob-step">
+      <span class="ob-step-icon">💬</span>
+      <div class="ob-step-text">
+        <strong>Affiche ou copie la carte</strong>
+        Montre-la, lis-la à voix haute, ou envoie-la.
+      </div>
+    </div>
+    <div class="ob-step">
+      <span class="ob-step-icon">⭐</span>
+      <div class="ob-step-text">
+        <strong>Sauvegarde tes favoris</strong>
+        Retrouve tes cartes préférées en un clin d'œil.
+      </div>
+    </div>
+  </div>
+  <button class="btn-start" onclick="startApp()">Commencer ✨</button>
+</div>
+
+<div id="app">
+
+  <!-- ═══ SCREEN 1 : HOME ════════════════════════════════ -->
+  <div class="screen" id="screen-home">
+    <div class="header">
+      <div class="header-logo">
+        <div class="logo-dot">💛</div>
+        <div>
+          <h1>Mes Cartes</h1>
+          <p>Communication · Neurodivergent</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="situation-grid">
+      <div class="situation-label">Comment je me sens ?</div>
+
+      <button class="situation-btn" style="background:var(--sage-light);"
+              onclick="openCategory('expression')">
+        <div class="sit-icon">💬</div>
+        <div class="sit-info">
+          <div class="sit-title" style="color:var(--sage-dark)">Je m'exprime</div>
+          <div class="sit-desc">Expliquer ma façon naturelle de communiquer</div>
+        </div>
+        <span class="sit-arrow">›</span>
+      </button>
+
+      <button class="situation-btn" style="background:var(--beige);"
+              onclick="openCategory('conflict')">
+        <div class="sit-icon">🌀</div>
+        <div class="sit-info">
+          <div class="sit-title" style="color:var(--beige-dark)">Situation difficile</div>
+          <div class="sit-desc">Il y a une tension, un malentendu</div>
+        </div>
+        <span class="sit-arrow">›</span>
+      </button>
+
+      <button class="situation-btn" style="background:var(--blue);"
+              onclick="openCategory('justice')">
+        <div class="sit-icon">⚖️</div>
+        <div class="sit-info">
+          <div class="sit-title" style="color:var(--blue-dark)">Justice / Vérité</div>
+          <div class="sit-desc">Défendre une idée, chercher ce qui est juste</div>
+        </div>
+        <span class="sit-arrow">›</span>
+      </button>
+
+      <button class="situation-btn" style="background:#E8F0E8;"
+              onclick="openCategory('calm')">
+        <div class="sit-icon">🌿</div>
+        <div class="sit-info">
+          <div class="sit-title" style="color:var(--sage-dark)">Apaisement</div>
+          <div class="sit-desc">Calmer la situation, me recentrer</div>
+        </div>
+        <span class="sit-arrow">›</span>
+      </button>
+
+      <button class="situation-btn" style="background:var(--lavender);"
+              onclick="openCategory('self')">
+        <div class="sit-icon">✨</div>
+        <div class="sit-info">
+          <div class="sit-title" style="color:var(--lavender-dark)">Acceptation de soi</div>
+          <div class="sit-desc">Affirmer ma légitimité et ma valeur</div>
+        </div>
+        <span class="sit-arrow">›</span>
+      </button>
+
+      <button class="situation-btn" style="background:var(--gold); opacity:0.85;"
+              onclick="openCategory('english')">
+        <div class="sit-icon">🇬🇧</div>
+        <div class="sit-info">
+          <div class="sit-title" style="color:var(--gold-dark)">English Cards</div>
+          <div class="sit-desc">Bonus version in English</div>
+        </div>
+        <span class="sit-arrow">›</span>
+      </button>
+
+      <!-- Footer dans la home -->
+      <footer class="lw-footer">
+        <div class="lw-footer-container">
+          <div class="lw-footer-brand">
+            <h3>laboWeb</h3>
+            <p>Des outils simples pour apaiser, comprendre et avancer.</p>
+          </div>
+          <div class="lw-footer-links">
+            <a href="https://laboweb.tech" target="_blank">🌐 Site web</a>
+            <a href="https://paypal.me/JohannaCastagna" target="_blank">💛 Soutenir ce projet</a>
+          </div>
+          <div class="lw-footer-legal">
+            <p>© 2026 laboWeb</p>
+            <p class="lw-footer-signature">Créé avec 💛 par Johanna</p>
+            <button class="btn-replay" id="replayOnboardingBtn" onclick="replayOnboarding()">✨ Revoir l'intro</button>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ═══ SCREEN 2 : CARDS LIST ══════════════════════════ -->
+  <div class="screen hidden" id="screen-list">
+    <div class="back-bar">
+      <button class="back-btn" onclick="goHome()">‹</button>
+      <h2 id="list-title">Cartes</h2>
+      <span class="badge" id="list-count">0 cartes</span>
+    </div>
+    <div class="cards-list" id="cards-list-container"></div>
+  </div>
+
+  <!-- ═══ SCREEN 3 : FULL CARD ════════════════════════════ -->
+  <div class="screen hidden" id="screen-card">
+    <div class="full-back-bar">
+      <button class="back-btn" onclick="goList()">‹</button>
+      <span class="card-counter" id="card-counter">1 / 1</span>
+      <button class="card-fav-btn" id="card-fav-btn" onclick="toggleFavCard()">☆</button>
+    </div>
+    <div class="card-display">
+      <div class="card-face" id="card-face">
+        <div class="card-top-bar" id="card-top-bar"></div>
+        <div class="card-inner">
+          <div class="card-cat-badge" id="card-badge"></div>
+          <span class="card-emoji-big" id="card-emoji"></span>
+          <div class="card-title-big" id="card-title"></div>
+          <div class="card-divider" id="card-divider"></div>
+          <div class="card-body-big" id="card-body"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-actions">
+      <button class="card-action-btn btn-copy-full" onclick="copyCard()">
+        <span>📋</span> Copier ce message
+      </button>
+      <button class="card-action-btn btn-share-full" id="btn-share" onclick="shareCard()" style="display:none">
+        <span>↗</span> Partager
+      </button>
+      <button class="card-action-btn btn-prev" onclick="prevCard()">‹ Précédente</button>
+      <button class="card-action-btn btn-next" onclick="nextCard()">Suivante ›</button>
+    </div>
+  </div>
+
+  <!-- ═══ SCREEN 4 : FAVORITES ════════════════════════════ -->
+  <div class="screen hidden" id="screen-favs">
+    <div class="header">
+      <div class="header-logo">
+        <div class="logo-dot">⭐</div>
+        <div>
+          <h1>Mes favoris</h1>
+          <p>Cartes sauvegardées</p>
+        </div>
+      </div>
+    </div>
+    <div class="empty-state" id="favs-empty">
+      <div class="empty-icon">💛</div>
+      <div class="empty-title">Pas encore de favoris</div>
+      <div class="empty-desc">Appuyez sur ⭐ sur une carte pour la sauvegarder ici.</div>
+    </div>
+    <div class="cards-list" id="favs-container" style="display:none"></div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- Toast -->
+<div id="toast">✓ Copié !</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-item active" id="nav-home" onclick="switchTab('home')">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">Accueil</span>
+  </button>
+  <button class="nav-item" id="nav-favs" onclick="switchTab('favs')">
+    <span class="nav-icon">⭐</span>
+    <span class="nav-label">Favoris</span>
+  </button>
+</nav>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const CATEGORIES = {
+  expression: {
+    label: "Je m'exprime",
+    emoji: "💬",
+    accent: "#8BAF8E",
+    bg: "#D4E5D5",
+    badgeBg: "#D4E5D5",
+    badgeColor: "#5A7E5D",
+    cards: [
+      { emoji: "💬", title: "Je parle avec sincérité",
+        body: "Je n'ai pas l'intention de blesser.\nJe dis simplement ce que je perçois." },
+      { emoji: "🤝", title: "Communication directe",
+        body: "Ma communication est directe,\nmais toujours respectueuse." },
+      { emoji: "🧠", title: "Pas d'intention négative",
+        body: "Je peux sembler brusque,\nmais ce n'est pas mon intention." },
+      { emoji: "💡", title: "J'apprends encore",
+        body: "J'apprends encore à exprimer\nmes pensées avec douceur." },
+    ]
+  },
+  conflict: {
+    label: "Situation difficile",
+    emoji: "🌀",
+    accent: "#A0826D",
+    bg: "#E8DDD0",
+    badgeBg: "#E8DDD0",
+    badgeColor: "#A0826D",
+    cards: [
+      { emoji: "🌀", title: "Je ressens un malentendu",
+        body: "Je pense que quelque chose\nn'a pas été compris comme prévu." },
+      { emoji: "🕊️", title: "Clarification calme",
+        body: "Je préfère qu'on clarifie\ncalmement, sans tension." },
+      { emoji: "🔍", title: "J'explique, je n'attaque pas",
+        body: "Je n'attaque pas.\nJ'essaie juste d'expliquer." },
+      { emoji: "🛑", title: "J'ai besoin d'une pause",
+        body: "J'ai besoin d'une pause\navant de continuer cette discussion." },
+    ]
+  },
+  justice: {
+    label: "Justice / Vérité",
+    emoji: "⚖️",
+    accent: "#5B8FA8",
+    bg: "#C5D8E8",
+    badgeBg: "#C5D8E8",
+    badgeColor: "#5B8FA8",
+    cards: [
+      { emoji: "⚖️", title: "Je cherche ce qui est juste",
+        body: "Mon but n'est pas de gagner.\nJe cherche ce qui est vrai et juste." },
+      { emoji: "💭", title: "Une idée, pas un combat",
+        body: "Je défends une idée,\npas contre une personne." },
+      { emoji: "🌊", title: "La vérité me tient à cœur",
+        body: "La cohérence et la vérité\nsont importantes pour moi." },
+    ]
+  },
+  calm: {
+    label: "Apaisement",
+    emoji: "🌿",
+    accent: "#8BAF8E",
+    bg: "#E8F0E8",
+    badgeBg: "#E8F0E8",
+    badgeColor: "#5A7E5D",
+    cards: [
+      { emoji: "🌿", title: "Je peux reformuler",
+        body: "Donne-moi un instant —\nje vais reformuler autrement." },
+      { emoji: "❤️", title: "Mon intention est positive",
+        body: "Derrière mes mots,\nmon intention est bienveillante." },
+      { emoji: "🫶", title: "Je veux qu'on se comprenne",
+        body: "Je veux qu'on se comprenne.\nPas qu'on soit en conflit." },
+    ]
+  },
+  self: {
+    label: "Acceptation de soi",
+    emoji: "✨",
+    accent: "#8B6DAE",
+    bg: "#D5CBE8",
+    badgeBg: "#D5CBE8",
+    badgeColor: "#8B6DAE",
+    cards: [
+      { emoji: "✨", title: "Ma différence est une force",
+        body: "Ma façon d'être est différente,\net c'est une vraie richesse." },
+      { emoji: "🌱", title: "Je suis légitime",
+        body: "Je suis légitime dans\nma façon de penser et d'être." },
+      { emoji: "🦋", title: "Je n'ai pas à me transformer",
+        body: "Je n'ai pas besoin d'être\ncomme les autres pour être valable." },
+      { emoji: "🌟", title: "Mon cerveau fonctionne autrement",
+        body: "Mon cerveau fonctionne autrement.\nC'est une caractéristique, pas un défaut." },
+    ]
+  },
+  english: {
+    label: "English Cards",
+    emoji: "🇬🇧",
+    accent: "#C9A96E",
+    bg: "#F5ECD9",
+    badgeBg: "#F5ECD9",
+    badgeColor: "#A07840",
+    cards: [
+      { emoji: "💬", title: "I speak honestly",
+        body: "I don't intend to hurt.\nI simply share what I perceive." },
+      { emoji: "⚖️", title: "I seek what's right",
+        body: "My goal isn't to win.\nI'm looking for what is fair and true." },
+      { emoji: "🌿", title: "I can rephrase",
+        body: "Give me a moment —\nI'll try to say this differently." },
+      { emoji: "✨", title: "My difference is a strength",
+        body: "The way I am is different,\nand that is a true richness." },
+      { emoji: "🫶", title: "My intention is positive",
+        body: "Behind my words,\nmy intention is kind." },
+    ]
+  }
+};
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+let currentCategory = null;
+let currentCardIdx  = 0;
+let favorites       = JSON.parse(localStorage.getItem('nd_favs') || '[]');
+let currentScreen   = 'screen-home';
+
+// ─── ONBOARDING ─────────────────────────────────────────────────────────────
+function startApp() {
+  const ob = document.getElementById('onboarding');
+  ob.classList.add('fade-out');
+  setTimeout(() => ob.classList.add('hidden'), 500);
+  localStorage.setItem('nd_onboarded', '1');
+}
+
+function replayOnboarding() {
+  const ob = document.getElementById('onboarding');
+  ob.classList.remove('hidden', 'fade-out');
+}
+
+// Show onboarding on first visit
+if (!localStorage.getItem('nd_onboarded')) {
+  // already shown by default
+} else {
+  document.getElementById('onboarding').classList.add('hidden');
+}
+
+// ─── WEB SHARE API ───────────────────────────────────────────────────────────
+if (navigator.share) {
+  document.getElementById('btn-share').style.display = 'flex';
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────────────────────────
+function showScreen(id, direction = 'forward') {
+  const prev = document.getElementById(currentScreen);
+  const next = document.getElementById(id);
+
+  if (direction === 'forward') {
+    prev.classList.add('exit-left');
+  } else {
+    prev.classList.add('hidden');
+  }
+
+  next.classList.remove('hidden', 'exit-left');
+  next.scrollTop = 0;
+
+  setTimeout(() => prev.classList.add('hidden'), 350);
+  currentScreen = id;
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-' + tab).classList.add('active');
+
+  if (tab === 'home') {
+    showScreen('screen-home', 'back');
+  } else if (tab === 'favs') {
+    renderFavs();
+    showScreen('screen-favs', 'forward');
+  }
+}
+
+function goHome() {
+  document.getElementById('nav-home').classList.add('active');
+  document.getElementById('nav-favs').classList.remove('active');
+  showScreen('screen-home', 'back');
+}
+
+function goList() {
+  showScreen('screen-list', 'back');
+}
+
+// ─── OPEN CATEGORY ──────────────────────────────────────────────────────────
+function openCategory(catKey) {
+  currentCategory = catKey;
+  currentCardIdx  = 0;
+  const cat = CATEGORIES[catKey];
+
+  document.getElementById('list-title').textContent = cat.label;
+  const cards = cat.cards;
+  document.getElementById('list-count').textContent = cards.length + ' cartes';
+
+  const container = document.getElementById('cards-list-container');
+  container.innerHTML = '';
+
+  cards.forEach((card, idx) => {
+    const isFav = isFavorite(catKey, idx);
+    const div = document.createElement('div');
+    div.className = 'mini-card';
+    div.style.borderLeftColor = cat.accent;
+
+    div.innerHTML = `
+      <div class="mini-card-top">
+        <span class="mini-emoji">${card.emoji}</span>
+        <span class="mini-title">${card.title}</span>
+        <button class="mini-fav-btn" onclick="toggleFav('${catKey}', ${idx}, this)" title="Ajouter aux favoris">${isFav ? '⭐' : '☆'}</button>
+      </div>
+      <div class="mini-body">${card.body.replace(/\n/g, '<br>')}</div>
+      <div class="mini-actions">
+        <button class="action-chip chip-show" onclick="openCard(${idx}, event)">
+          👁 Afficher
+        </button>
+        <button class="action-chip chip-copy" onclick="copyText('${escapeQ(card.body)}', event)">
+          📋 Copier
+        </button>
+        ${navigator.share ? `<button class="action-chip chip-share" onclick="shareText('${escapeQ(card.title)}', '${escapeQ(card.body)}', event)">↗ Partager</button>` : ''}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  showScreen('screen-list');
+}
+
+// ─── OPEN FULL CARD ──────────────────────────────────────────────────────────
+function openCard(idx, e) {
+  if (e) e.stopPropagation();
+  currentCardIdx = idx;
+  renderCard();
+  showScreen('screen-card');
+}
+
+function renderCard() {
+  const cat  = CATEGORIES[currentCategory];
+  const card = cat.cards[currentCardIdx];
+  const total = cat.cards.length;
+
+  document.getElementById('card-top-bar').style.background = cat.accent;
+  document.getElementById('card-badge').style.background   = cat.badgeBg;
+  document.getElementById('card-badge').style.color        = cat.badgeColor;
+  document.getElementById('card-badge').innerHTML          = `${cat.emoji} ${cat.label}`;
+  document.getElementById('card-emoji').textContent        = card.emoji;
+  document.getElementById('card-title').textContent        = card.title;
+  document.getElementById('card-divider').style.background = cat.accent;
+  document.getElementById('card-body').innerHTML           = card.body.replace(/\n/g, '<br>');
+  document.getElementById('card-counter').textContent      = `${currentCardIdx + 1} / ${total}`;
+
+  // Update fav button
+  const favBtn = document.getElementById('card-fav-btn');
+  favBtn.textContent = isFavorite(currentCategory, currentCardIdx) ? '⭐' : '☆';
+
+  // Re-trigger animation
+  const face = document.getElementById('card-face');
+  face.style.animation = 'none';
+  void face.offsetHeight;
+  face.style.animation = '';
+
+  const emojiEl = document.getElementById('card-emoji');
+  emojiEl.style.animation = 'none';
+  void emojiEl.offsetHeight;
+  emojiEl.style.animation = '';
+}
+
+function prevCard() {
+  const cards = CATEGORIES[currentCategory].cards;
+  currentCardIdx = (currentCardIdx - 1 + cards.length) % cards.length;
+  renderCard();
+}
+
+function nextCard() {
+  const cards = CATEGORIES[currentCategory].cards;
+  currentCardIdx = (currentCardIdx + 1) % cards.length;
+  renderCard();
+}
+
+// ─── COPY ────────────────────────────────────────────────────────────────────
+function copyCard() {
+  const card = CATEGORIES[currentCategory].cards[currentCardIdx];
+  const text = `${card.title}\n\n${card.body}`;
+  copyText(text);
+}
+
+function copyText(text, e) {
+  if (e) e.stopPropagation();
+  const decoded = text.replace(/\\n/g, '\n');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(decoded).then(showToast).catch(() => fallbackCopy(decoded));
+  } else { fallbackCopy(decoded); }
+}
+
+function fallbackCopy(text) {
+  const el = document.createElement('textarea');
+  el.value = text;
+  el.style.position = 'fixed'; el.style.opacity = '0';
+  document.body.appendChild(el);
+  el.select(); document.execCommand('copy');
+  document.body.removeChild(el);
+  showToast();
+}
+
+function showToast(msg = '✓ Copié dans le presse-papiers') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── SHARE ───────────────────────────────────────────────────────────────────
+function shareCard() {
+  const card = CATEGORIES[currentCategory].cards[currentCardIdx];
+  shareText(card.title, card.body);
+}
+
+function shareText(title, body, e) {
+  if (e) e.stopPropagation();
+  const decodedBody = body.replace(/\\n/g, '\n');
+  const decodedTitle = title.replace(/\\'/g, "'");
+  if (navigator.share) {
+    navigator.share({
+      title: decodedTitle,
+      text: `${decodedTitle}\n\n${decodedBody}`,
+    }).catch(() => {});
+  }
+}
+
+// ─── FAVORITES ───────────────────────────────────────────────────────────────
+function isFavorite(cat, idx) {
+  return favorites.some(f => f.cat === cat && f.idx === idx);
+}
+
+function toggleFav(cat, idx, btn) {
+  const existing = favorites.findIndex(f => f.cat === cat && f.idx === idx);
+  if (existing >= 0) {
+    favorites.splice(existing, 1);
+    if (btn) btn.textContent = '☆';
+    showToast('Retiré des favoris');
+  } else {
+    favorites.push({ cat, idx });
+    if (btn) btn.textContent = '⭐';
+    showToast('⭐ Ajouté aux favoris !');
+  }
+  localStorage.setItem('nd_favs', JSON.stringify(favorites));
+}
+
+function toggleFavCard() {
+  const btn = document.getElementById('card-fav-btn');
+  toggleFav(currentCategory, currentCardIdx, btn);
+  // Also update the mini-card in list if visible
+}
+
+function renderFavs() {
+  const empty   = document.getElementById('favs-empty');
+  const cont    = document.getElementById('favs-container');
+
+  if (favorites.length === 0) {
+    empty.style.display = 'flex';
+    cont.style.display  = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  cont.style.display  = 'flex';
+  cont.innerHTML = '';
+
+  favorites.forEach((fav, favIdx) => {
+    const cat  = CATEGORIES[fav.cat];
+    if (!cat) return;
+    const card = cat.cards[fav.idx];
+    if (!card) return;
+    const div  = document.createElement('div');
+    div.className = 'mini-card';
+    div.style.borderLeftColor = cat.accent;
+    div.innerHTML = `
+      <div class="mini-card-top">
+        <span class="mini-emoji">${card.emoji}</span>
+        <span class="mini-title">${card.title}</span>
+        <button class="mini-fav-btn" onclick="removeFavAndRefresh(${favIdx}, this)" title="Retirer des favoris">⭐</button>
+      </div>
+      <div class="mini-body">${card.body.replace(/\n/g, '<br>')}</div>
+      <div class="mini-actions">
+        <button class="action-chip chip-copy" onclick="copyText('${escapeQ(card.body)}', event)">
+          📋 Copier
+        </button>
+        ${navigator.share ? `<button class="action-chip chip-share" onclick="shareText('${escapeQ(card.title)}', '${escapeQ(card.body)}', event)">↗ Partager</button>` : ''}
+      </div>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function removeFavAndRefresh(favIdx, btn) {
+  favorites.splice(favIdx, 1);
+  localStorage.setItem('nd_favs', JSON.stringify(favorites));
+  showToast('Retiré des favoris');
+  renderFavs();
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function escapeQ(s) {
+  return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "name": "Cartes de Communication Neurodivergent",
+  "short_name": "Mes Cartes",
+  "description": "Cartes de communication pour personnes atypiques – TSA / HPI / TDAH",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F4EF",
+  "theme_color": "#8BAF8E",
+  "lang": "fr",
+  "categories": ["health", "lifestyle", "education"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Je m'exprime",
+      "short_name": "Expression",
+      "description": "Cartes pour expliquer ma façon de communiquer",
+      "url": "./index.html#expression",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Apaisement",
+      "short_name": "Apaisement",
+      "description": "Cartes pour calmer une situation difficile",
+      "url": "./index.html#calm",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
